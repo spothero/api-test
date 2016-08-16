@@ -51,13 +51,14 @@ class ApiTest(Plugin):
 
             response = custom_test.response
 
-            examples = list()
-            self.traverse_yaml(response, self.find_example, **{'examples': examples})
-            for example in examples:
-                if 'x-test-class' not in example:
+            test_data = list()
+            self.traverse_yaml(response, self.find_test_data, **{'test_data': test_data})
+            for data in test_data:
+                test_copy = data.copy()
+                if 'model' not in test_copy:
                     continue
-                target_class = example.pop('x-test-class')
-                import_func(target_class, example)
+                target_class = test_copy.pop('model')
+                import_func(target_class, test_copy)
 
     def loadTestsFromFile(self, file):
         # with open(settings.API_SPEC) as spec:
@@ -117,9 +118,9 @@ class ApiTest(Plugin):
         if key == search:
             kwargs[search].append(node)
 
-    def find_example(self, node, key, item, **kwargs):
-        if key == 'example':
-            kwargs['examples'].append(item)
+    def find_test_data(self, node, key, item, **kwargs):
+        if key == 'x-test-data':
+            kwargs['test_data'].append(item)
 
     # def load_ref(self, node, key, item, **kwargs):
     #     if key == kwargs['ref']:

@@ -19,11 +19,11 @@ from utils import compare_definition_to_actual
 logger = logging.getLogger(__name__)
 
 
-type_dict = {
-    'array': list,
-    'integer': int,
-    'string': str
-}
+class TestConfigurationException(Exception):
+    msg = 'Cannot run test due to improper configuration'
+
+    def __init__(self, msg):
+        self.msg = msg
 
 
 class GetTestCase(test.TransactionTestCase):
@@ -36,8 +36,6 @@ class GetTestCase(test.TransactionTestCase):
         self.test_object = test_object
 
     def runTest(self):
-        # basic_auth = HTTPBasicAuth('lkiss80@hotmail.com', 'larry123')
-        # client = APIClient(HTTP_HOST='api.spothero.local')
         client = APIClient()
         test_user = User.objects.create_superuser(username='user', email='user@test.com',
                                                   password='top_secret')
@@ -45,16 +43,27 @@ class GetTestCase(test.TransactionTestCase):
 
         params = dict()
         for parameter in self.parameters:
-            logger.info('parameter %s' % parameter)
-            param_type = parameter['type']
-            if param_type == 'string' and parameter['required']:
-                param_val = parameter.get('x-test-data', 'somestring')
-                params[parameter['name']] = param_val
+            test_value = parameter.get('x-test-data')
+            if not test_value:
+                if parameter['required']:
+                    raise TestConfigurationException(msg='x-test-data must be defined for required'
+                                                     ' parameters')
+                else:
+                    continue
+
+            param_in = parameter['in']
+            param_name = parameter['name']
+            if param_in == 'query':
+                params[param_name] = test_value
+            elif param_in == 'path':
+                self.url = self.url.replace('{%s}' % param_name, str(test_value))
 
         get_response = client.get(self.url, data=params)
-        logger.info('RESPONSE: %s' % get_response)
-        self.assertEqual(get_response.status_code, self.response['status_code'])
-        body = json.loads(get_response.content)
+        content = get_response.content
+        code = get_response.status_code
+        msg = 'code: %s, content: %s' % (code, content)
+        self.assertEqual(code, self.response['status_code'], msg)
+        body = json.loads(content)
         compare_definition_to_actual(self.response['schema'], body)
 
     def setUp(self):
