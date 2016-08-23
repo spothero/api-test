@@ -35,8 +35,13 @@ class GetTestCase(test.TransactionTestCase):
 
     def runTest(self):
         client = APIClient()
-        test_user = User.objects.create_superuser(username='user', email='user@test.com',
-                                                  password='top_secret')
+        try:
+            user = self.test_data['user']
+            user_id = user['pk']
+            test_user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, KeyError):
+            test_user = User.objects.create_superuser(username='user', email='user@test.com',
+                                                      password='top_secret')
         client.force_authenticate(user=test_user)
 
         params = dict()

@@ -59,9 +59,19 @@ class ApiTest(Plugin):
             if test_data:
                 test_copy = test_data.copy()
                 object_data = test_copy['data']
-                if 'model' in object_data:
-                    target_class = object_data.pop('model')
-                    import_func(target_class, object_data)
+                self.insert_test_data(object_data, import_func)
+
+    def insert_test_data(self, object_data, import_func):
+        if not object_data:
+            return
+        for key, value in object_data.items():
+            if isinstance(value, dict):
+                inserted_object = self.insert_test_data(value, import_func)
+                object_data[key] = inserted_object
+
+        if 'model' in object_data:
+            target_class = object_data.pop('model')
+            return import_func(target_class, object_data)
 
     def loadTestsFromFile(self, file):
         return test_generator.generate_tests(file)
