@@ -4,6 +4,7 @@ import logging
 from django.core.management import call_command
 from django.conf import settings
 from nose.plugins.base import Plugin
+from nose.failure import Failure
 
 import test_generator
 
@@ -43,6 +44,8 @@ class ApiTest(Plugin):
 
     def beforeTest(self, test):
         custom_test = test.test
+        if isinstance(custom_test, Failure):
+            return
         data_loader = settings.API_TEST_DATA_LOADER
         if data_loader:
             module, _, func = data_loader.rpartition('.')
@@ -52,12 +55,13 @@ class ApiTest(Plugin):
                 # TODO make better exception -AK
                 raise Exception(msg='Failed data import.')
 
-            test_data = custom_test.test_data
-            test_copy = test_data.copy()
-            object_data = test_copy['data']
-            if 'model' in object_data:
-                target_class = object_data.pop('model')
-                import_func(target_class, object_data)
+            test_data = getattr(custom_test, 'test_data')
+            if test_data:
+                test_copy = test_data.copy()
+                object_data = test_copy['data']
+                if 'model' in object_data:
+                    target_class = object_data.pop('model')
+                    import_func(target_class, object_data)
 
     def loadTestsFromFile(self, file):
         return test_generator.generate_tests(file)

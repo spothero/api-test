@@ -22,6 +22,8 @@ class TestConfigurationException(Exception):
 class GetTestCase(test.TransactionTestCase):
     def __init__(self, path, url, parameters, response, test_data=None, methodName='runTest'):
         super(GetTestCase, self).__init__(methodName)
+        if test_data is None:
+            test_data = dict()
         self.path = path
         self.url = url
         self.parameters = parameters

@@ -25,7 +25,12 @@ def generate_tests(spec_file):
                     if not int(code) == 200:
                         continue  # not yet implemented
                     response['status_code'] = int(code)
-                    for test_data in get_specification['x-test']:
+                    test_cases = get_specification.get('x-test')
+                    if not test_cases:
+                        yield GetTestCase(path_name, url, get_specification['parameters'],
+                                          response)
+                        continue
+                    for test_data in test_cases:
                         case = GetTestCase(path_name, url, get_specification['parameters'],
                                            response, test_data)
                         yield case
