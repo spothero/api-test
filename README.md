@@ -13,6 +13,7 @@ For the future:
   - print definitions as they are tested
   - print response with definition as its tested
   - print url and request parameters
+- allow subsets of tests to be selected
 
 
 
