@@ -1,5 +1,8 @@
 import json
 import logging
+import datetime
+import re
+from dateutil import relativedelta
 
 from django import test
 from rest_framework.test import APIClient
@@ -50,6 +53,15 @@ class GetTestCase(test.TransactionTestCase):
 
             param_in = parameter['in']
             if param_in == 'query':
+                param_format = parameter.get('format')
+                if parameter['type'] == 'string' and param_format:
+                    test_value = self.build_formatted_param(param_format, test_value)
+                    pattern = parameter.get('pattern')
+                    if pattern:
+                        msg = ('test parameter %s does not match defined parameter pattern %s'
+                               % (test_value, pattern))
+                        self.assertIsNotNone(re.match(pattern, test_value), msg=msg)
+
                 params[param_name] = test_value
             elif param_in == 'path':
                 self.url = self.url.replace('{%s}' % param_name, str(test_value))
@@ -61,6 +73,29 @@ class GetTestCase(test.TransactionTestCase):
         self.assertEqual(code, self.response['status_code'], msg)
         body = json.loads(content)
         compare_definition_to_actual(self.response['schema'], body)
+
+    def build_formatted_param(self, param_format, test_value):
+        # check if param is just explicitly defined
+        if isinstance(test_value, basestring):
+            return test_value
+
+        # build param based on relative inputs
+        if param_format == 'dateTime':
+            now = datetime.datetime.now()
+            now += relativedelta.relativedelta(years=test_value.get('year', 0),
+                                               months=test_value.get('month', 0),
+                                               days=test_value.get('day', 0),
+                                               hours=test_value.get('hour', 0),
+                                               minutes=test_value.get('minute', 0),
+                                               seconds=test_value.get('second', 0))
+            test_value = now.strftime(test_value['format'])
+        elif param_format == 'date':
+            now = datetime.date.now()
+            now += relativedelta.relativedelta(years=test_value.get('year', 0),
+                                               months=test_value.get('month', 0),
+                                               days=test_value.get('day', 0))
+            test_value = now.strftime(test_value['format'])
+        return test_value
 
     def setUp(self):
         super(GetTestCase, self).setUp()
