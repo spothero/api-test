@@ -14,6 +14,7 @@ For the future:
   - print response with definition as its tested
   - print url and request parameters
 - allow subsets of tests to be selected
+- fail when response has more items than definition
 
 
 
