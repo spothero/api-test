@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 
 from django.contrib.auth import get_user_model
 from utils import compare_definition_to_actual
+from utils import compare_actual_to_definition
 
 
 User = get_user_model()
@@ -78,6 +79,7 @@ class GetTestCase(test.TransactionTestCase):
         self.assertEqual(code, self.response['status_code'], msg)
         body = json.loads(content)
         compare_definition_to_actual(self.response['schema'], body)
+        compare_actual_to_definition(self.response['schema'], body)
 
     def build_formatted_param(self, param_format, test_value):
         # check if param is just explicitly defined

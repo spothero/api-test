@@ -47,6 +47,21 @@ def compare_definition_to_actual(definition, actual):
                                                  (prop, prop_type, actual[prop].__cls__))
 
 
+def compare_actual_to_definition(definition, actual):
+    properties = definition.get('properties')
+    if not properties:
+        return
+
+    for key, value in actual.iteritems():
+        if key not in properties:
+            raise AssertionError('Undocumented key returned %s' % key)
+        if isinstance(value, dict):
+            compare_actual_to_definition(properties[key], value)
+        elif isinstance(value, list):
+            for v in value:
+                compare_actual_to_definition(properties[key], v)
+
+
 def get_value(prop_def, key):
     try:
         array_item_type = prop_def[key]
