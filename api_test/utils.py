@@ -37,7 +37,11 @@ def compare_definition_to_actual(definition, actual):
                 items = get_value(prop_def, 'items')
                 array_item_type = get_value(items, 'type')
                 if array_item_type == 'object':
-                    for item in actual[prop]:
+                    items = actual[prop]
+                    if not items:
+                        raise AssertionError('The value is None for the prop key, {}, in the '
+                                             'actual value.'.format())
+                    for item in items:
                         compare_definition_to_actual(items, item)
                 else:
                     actual_item_type = type_dict[array_item_type]
