@@ -40,7 +40,7 @@ def compare_definition_to_actual(definition, actual):
                     items = actual[prop]
                     if not items:
                         raise AssertionError('The value is None for the prop key, {}, in the '
-                                             'actual value.'.format())
+                                             'actual value.'.format(prop))
                     for item in items:
                         compare_definition_to_actual(items, item)
                 else:
