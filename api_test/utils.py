@@ -65,7 +65,7 @@ def compare_actual_to_definition(definition, actual):
                 for v in value:
                     compare_actual_to_definition(properties[key], v)
     except AttributeError:
-        raise AssertionError('Actual is of type {} and can not be iterated on. '
+        raise AssertionError('Actual is of type {} and does not not have iteritems(). '
                              'Definition is of type {}'.format(type(actual), type(definition)))
 
 
