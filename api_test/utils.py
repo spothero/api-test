@@ -37,8 +37,12 @@ def compare_definition_to_actual(definition, actual):
                 items = get_value(prop_def, 'items')
                 array_item_type = get_value(items, 'type')
                 if array_item_type == 'object':
-                    for item in actual[prop]:
-                        compare_definition_to_actual(items, item)
+                    try:
+                        for item in actual[prop]:
+                            compare_definition_to_actual(items, item)
+                    except TypeError:
+                        raise AssertionError('actual[prop] for prop value of {} is None and can '
+                                             'not be iterated over.'.format(prop))
                 else:
                     actual_item_type = type_dict[array_item_type]
                     for item in actual[prop]:
@@ -51,15 +55,18 @@ def compare_actual_to_definition(definition, actual):
     properties = definition.get('properties')
     if not properties:
         return
-
-    for key, value in actual.iteritems():
-        if key not in properties:
-            raise AssertionError('Undocumented key returned %s' % key)
-        if isinstance(value, dict):
-            compare_actual_to_definition(properties[key], value)
-        elif isinstance(value, list):
-            for v in value:
-                compare_actual_to_definition(properties[key], v)
+    try:
+        for key, value in actual.iteritems():
+            if key not in properties:
+                raise AssertionError('Undocumented key returned %s' % key)
+            if isinstance(value, dict):
+                compare_actual_to_definition(properties[key], value)
+            elif isinstance(value, list):
+                for v in value:
+                    compare_actual_to_definition(properties[key], v)
+    except AttributeError:
+        raise AssertionError('Actual is of type {} and can not be iterated on. '
+                             'Definition is of type {}'.format(type(actual), type(definition)))
 
 
 def get_value(prop_def, key):
