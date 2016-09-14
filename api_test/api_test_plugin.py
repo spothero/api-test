@@ -1,7 +1,6 @@
-import yaml
+import collections
 import logging
 
-from django.core.management import call_command
 from django.conf import settings
 from nose.plugins.base import Plugin
 from nose.failure import Failure
@@ -59,7 +58,13 @@ class ApiTest(Plugin):
             if test_data:
                 test_copy = test_data.copy()
                 object_data = test_copy['data']
-                self.insert_test_data(object_data, import_func)
+
+                if isinstance(object_data, collections.Mapping):
+                    self.insert_test_data(object_data, import_func)
+                elif isinstance(object_data, collections.Iterable):
+                    for data in object_data:
+                        self.insert_test_data(data, import_func)
+
 
     def insert_test_data(self, object_data, import_func):
         if not object_data:
