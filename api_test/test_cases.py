@@ -52,8 +52,8 @@ class GetTestCase(test.TransactionTestCase):
             test_value = test_parameters.get(param_name)
             if not test_value:
                 if parameter['required']:
-                    raise TestConfigurationException(msg='x-test-data must be defined for required'
-                                                         ' parameter: {}'.format(param_name))
+                    # err_msg = 'x-test-data must be defined for required parameters'
+                    raise TestConfigurationException(msg=str(param_name))
                 else:
                     continue
 
