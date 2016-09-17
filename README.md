@@ -15,6 +15,17 @@ For the future:
   - print url and request parameters
 - allow subsets of tests to be selected
 - fail when response has more items than definition
+- nbk: Force the tester to utilize all of the structure documented -> right now, if there is no associated test data, it still passes
+- nbk: Some errors don't print correctly, for example: 
+    ======================================================================
+    ERROR: Testing path /facilities/rates/ for response code 200
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/Users/nick/envs/spothero/src/api-test/api_test/test_cases.py", line 57, in runTest
+        raise TestConfigurationException(msg=msg)
+    TestConfigurationException
+    ----------------------------------------------------------------------
+
 
 
 
