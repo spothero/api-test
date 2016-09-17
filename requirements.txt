@@ -2,4 +2,4 @@ django==1.8
 djangorestframework==2.3.11
 django-nose==1.4
 django-hosts==1.2
-unittest2=1.1.0
+unittest2==1.1.0
