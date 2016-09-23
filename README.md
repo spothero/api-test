@@ -13,6 +13,9 @@ Test Tool Roadmap:
   - test that not passing listed required params results in field errors for each method
 - test for permissions
   - set of test users to try for all endpoints
+- documentation
+  - document x-test inputs and format
+  - document test_data_loader functonality
 - allow verbosity levels to be set
   - print definitions as they are tested
   - print response with definition as its tested
