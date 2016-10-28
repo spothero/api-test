@@ -26,13 +26,12 @@ def generate_tests(spec_file):
                         continue  # not yet implemented
                     response['status_code'] = int(code)
                     test_cases = get_specification.get('x-test')
+                    parameters = get_specification.get('parameters')
                     if not test_cases:
-                        yield GetTestCase(path_name, url, get_specification['parameters'],
-                                          response)
+                        yield GetTestCase(path_name, url, parameters, response)
                         continue
                     for test_data in test_cases:
-                        case = GetTestCase(path_name, url, get_specification['parameters'],
-                                           response, test_data)
+                        case = GetTestCase(path_name, url, parameters, response, test_data)
                         yield case
     yield False
 
