@@ -30,7 +30,7 @@ class GetTestCase(test.TransactionTestCase):
             test_data = dict()
         self.path = path
         self.url = url
-        self.parameters = parameters
+        self.parameters = parameters or []
         self.response = response
         self.test_data = test_data
 
