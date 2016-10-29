@@ -27,7 +27,7 @@ def generate_tests(spec_file):
                     response['status_code'] = int(code)
                     test_cases = get_specification.get('x-test')
                     parameters = get_specification.get('parameters')
-                    if not test_cases:
+                    if test_cases is None:
                         yield GetTestCase(path_name, url, parameters, response)
                         continue
                     for test_data in test_cases:
