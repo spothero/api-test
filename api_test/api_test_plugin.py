@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 class ApiTest(Plugin):
     # Test classes
     test_classes = []
-    # This plugin is compatible with Django 1.9 parallel testing
-    parallel_compatible = True
+    # This plugin is incompatible with Django 1.9 parallel testing due to `beforeTest`
+    parallel_compatible = False
 
     def options(self, parser, env):
         """Nosetests use the deprecated OptionParser framework. If running this module as a
