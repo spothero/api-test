@@ -5,6 +5,7 @@ from django.conf import settings
 from nose.plugins.base import Plugin
 from nose.failure import Failure
 
+from test_cases import GetTestCase
 import test_generator
 
 
@@ -14,21 +15,29 @@ logger = logging.getLogger(__name__)
 class ApiTest(Plugin):
     # Test classes
     test_classes = []
+    # This plugin is incompatible with Django 1.9 parallel testing due to `beforeTest`
+    parallel_compatible = False
 
     def options(self, parser, env):
-        Plugin.options(self, parser, env)
-        parser.add_option("--api", dest="api", action="store_true", default=False)
+        """Nosetests use the deprecated OptionParser framework. If running this module as a
+        nose plugin, use `add_option`, otherwise default to the modern ArgParse `add_argument`.
+        """
+        if hasattr(parser, 'add_option'):
+            parser.add_option("--api", dest="api", action="store_true", default=False)
+        else:
+            parser.add_argument("--api", dest="api", action="store_true", default=False)
 
     def configure(self, options, conf):
-        Plugin.configure(self, options, conf)
         self.enabled = options.api
-
-    # def prepareTestRunner(self, runner):
-    #     from api_test.test_tool import TestRunner
-    #     return TestRunner()
 
     def wantFile(self, file):
         if 'yaml' in file:
+            return True
+        return False
+
+    def wantClass(self, cls):
+        """Signal that we want to run test cases which are derivative of `GetTestCase`"""
+        if isinstance(cls, GetTestCase):
             return True
         return False
 

@@ -34,6 +34,17 @@ class GetTestCase(test.TransactionTestCase):
         self.response = response
         self.test_data = test_data
 
+    def __eq__(self, other):
+        """Django Test Runner uses equality to choose whether or not a test is a duplicate. Simple
+        equality uses the name of the TestClass (`GetTestCase`) and the methodName, which is always
+        `runTest`. As such, The Django test runner will only run a single `GetTestCase` method
+        unless we override equality to include all the details of the given test.
+        """
+        equal = self.path == other.path
+        equal &= self.url == other.url
+        equal &= self.parameters == other.parameters
+        return equal
+
     def runTest(self):
         client = APIClient()
         try:

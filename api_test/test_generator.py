@@ -33,7 +33,7 @@ def generate_tests(spec_file):
                     for test_data in test_cases:
                         case = GetTestCase(path_name, url, parameters, response, test_data)
                         yield case
-    yield False
+    raise StopIteration
 
 
 def inline_swagger_refs(target_load_dict, full_swagger):
