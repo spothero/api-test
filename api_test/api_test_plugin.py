@@ -37,7 +37,7 @@ class ApiTest(Plugin):
 
     def wantClass(self, cls):
         """Signal that we want to run test cases which are derivative of `GetTestCase`"""
-        if isinstance(cls, GetTestCase):
+        if cls == GetTestCase:
             return True
         return False
 
