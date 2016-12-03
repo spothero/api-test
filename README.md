@@ -3,10 +3,20 @@ The tests will use any test data listed in the spec file and compare defined res
 
 This tool currently only supports get requests and 200 responses.
 
-How to run this tool:
-python manage.py test --api <swagger_file.yaml>
+## How to run this tool:
 
-Test Tool Roadmap:
+    python manage.py test --api <swagger_file.yaml> --endpoint-substr=SUBSTRING --tags=TAGS
+
+Both `--endpoint-substr` and `--tags` are optional, and used to select subsets of tests to run.
+
+`SUBSTRING` must be a substring of the endpoint for tests on that endpoint to be run.
+
+`TAGS` is a comma-separated list of tags of tests to run. For example, `--tags=Facilities,Users` will run tests that
+have the `Facilities` tag, and also tests that have the `Users` tag.
+
+
+## Test Tool Roadmap:
+
 - test that all endpoints are documented
 - support all http method requests
 - test for error responses (400, 422, 428...) 
@@ -21,8 +31,6 @@ Test Tool Roadmap:
   - print response with definition as its tested
   - print url and request parameters
 - allow subsets of tests to be selected
-  - select by tag
-  - select by endpoint
   - select by endpoint, type, and response (e.g. /reservations/.get.200)
 - support assert criteria
   - min/max, pattern checking
