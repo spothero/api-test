@@ -29,7 +29,7 @@ def generate_tests(spec_file, url_substring='', required_tags=None):
 
                 # tag condition: if the current tags match any of the required tags, then we should return it
                 tags = get_specification.get('tags', [])
-                if required_tags and not any(tag in tags for tag in required_tags):
+                if required_tags and not set(tags).intersection(set(required_tags)):
                     # continue on to next path
                     #   (Note: after implementing more HTTP methods besides GET, make sure you go
                     #   on to the next method instead of the next path here)
