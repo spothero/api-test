@@ -1,5 +1,3 @@
-import collections
-
 type_dict = {
     'array': list,
     'integer': int,
