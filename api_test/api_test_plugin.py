@@ -18,17 +18,32 @@ class ApiTest(Plugin):
     # This plugin is incompatible with Django 1.9 parallel testing due to `beforeTest`
     parallel_compatible = False
 
+    def __init__(self):
+        super(ApiTest, self).__init__()
+        self.url_substring = ''
+        self.required_tags = []
+
     def options(self, parser, env):
         """Nosetests use the deprecated OptionParser framework. If running this module as a
         nose plugin, use `add_option`, otherwise default to the modern ArgParse `add_argument`.
         """
+        add_args_kwargs_list = [
+            (["--api"],             dict(dest="api", action="store_true", default=False)),
+            (["--endpoint-substr"], dict(dest="url_substring", action="store", default='')),
+            (["--tags"],            dict(dest="required_tags", action="store", default=None)),
+        ]
+
         if hasattr(parser, 'add_option'):
-            parser.add_option("--api", dest="api", action="store_true", default=False)
+            for args, kwargs in add_args_kwargs_list:
+                parser.add_option(*args, **kwargs)
         else:
-            parser.add_argument("--api", dest="api", action="store_true", default=False)
+            for args, kwargs in add_args_kwargs_list:
+                parser.add_argument(*args, **kwargs)
 
     def configure(self, options, conf):
         self.enabled = options.api
+        self.url_substring = options.url_substring
+        self.required_tags = options.required_tags.split(',') if options.required_tags else []
 
     def wantFile(self, file):
         if 'yaml' in file:
@@ -74,7 +89,6 @@ class ApiTest(Plugin):
                     for data in object_data:
                         self.insert_test_data(data, import_func)
 
-
     def insert_test_data(self, object_data, import_func):
         if not object_data:
             return
@@ -88,4 +102,4 @@ class ApiTest(Plugin):
             return import_func(target_class, object_data)
 
     def loadTestsFromFile(self, file):
-        return test_generator.generate_tests(file)
+        return test_generator.generate_tests(file, self.url_substring, self.required_tags)

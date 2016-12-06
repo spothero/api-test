@@ -4,17 +4,37 @@ from django.conf import settings
 import yaml_utils
 
 
-def generate_tests(spec_file):
+def generate_tests(spec_file, url_substring='', required_tags=None):
+    if not required_tags:
+        required_tags = []
+
     from test_cases import GetTestCase
 
     with open(spec_file) as spec:
+        # parse yaml spec file into a dict-like object
         spec_nodes = yaml.load(spec)
+
         base_path = spec_nodes['basePath']
         paths = spec_nodes['paths']
+
         for path_name, values in paths.iteritems():
             url = '//' + settings.PARENT_HOST + base_path + path_name
+
+            # url substring condition
+            if url_substring not in url:
+                continue
+
             if 'get' in values.keys():
                 get_specification = values['get']
+
+                # tag condition: if the current tags match any of the required tags, then we should return it
+                tags = get_specification.get('tags', [])
+                if required_tags and not set(tags).intersection(set(required_tags)):
+                    # continue on to next path
+                    #   (Note: after implementing more HTTP methods besides GET, make sure you go
+                    #   on to the next method instead of the next path here)
+                    continue
+
                 while 1:
                     loaded = inline_swagger_refs(get_specification, spec_nodes)
                     if not loaded:
