@@ -9,7 +9,9 @@ This tool currently only supports get requests and 200 responses.
 
 Both `--endpoint-substr` and `--tags` are optional, and used to select subsets of tests to run.
 
-`SUBSTRING` must be a substring of the endpoint for tests on that endpoint to be run.
+`SUBSTRING` must be a substring of the endpoint for tests on that endpoint to be run. For example,
+`--endpoint-substr=users/{user_id}/pro` will match the `/users/{user_id}/profile/` and
+`/users/{user_id}/profile/{profile_id}/` endpoints.
 
 `TAGS` is a comma-separated list of tags of tests to run. For example, `--tags=Facilities,Users` will run tests that
 have the `Facilities` tag, and also tests that have the `Users` tag.
