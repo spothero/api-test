@@ -92,7 +92,7 @@ class GetTestCase(test.TransactionTestCase):
         self.assertEqual(code, self.response['status_code'], msg)
         body = json.loads(content)
 
-        # Catch failures and print more information, then re-raise
+        # Catch failures and log more information, then re-raise
         try:
             compare_definition_to_actual(self.response['schema'], body)
         except AssertionError as e:
