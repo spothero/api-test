@@ -95,14 +95,24 @@ class GetTestCase(test.TransactionTestCase):
         # Catch failures and print more information, then re-raise
         try:
             compare_definition_to_actual(self.response['schema'], body)
+        except AssertionError as e:
+            logger.debug('Failure comparing definition to actual:\n'
+                         'Documentation Schema (definition):\n'
+                         '{}\n'
+                         'Returned Response Body (actual):\n'
+                         '{}'
+                         .format(pformat(self.response['schema']), pformat(body)))
+            raise e
+
+        try:
             compare_actual_to_definition(self.response['schema'], body)
         except AssertionError as e:
-            print('Failure:\n'
-                  'Documentation Schema:\n'
-                  '{}\n'
-                  'Returned Response Body:\n'
-                  '{}'
-                  .format(pformat(self.response['schema']), pformat(body)))
+            logger.debug('Failure comparing actual to definition:\n'
+                         'Documentation Schema (definition):\n'
+                         '{}\n'
+                         'Returned Response Body (actual):\n'
+                         '{}'
+                         .format(pformat(self.response['schema']), pformat(body)))
             raise e
 
     def build_formatted_param(self, param_format, test_value):
@@ -130,4 +140,3 @@ class GetTestCase(test.TransactionTestCase):
 
     def setUp(self):
         super(GetTestCase, self).setUp()
-
