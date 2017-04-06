@@ -23,15 +23,15 @@ def compare_definition_to_actual(definition, actual):
             if prop not in actual:
                 raise AssertionError(error_msg)
 
+
         prop_type = get_value(prop_def, 'type')
-        actual_value = actual.get(prop)
-        if prop_type == 'object' and actual_value is not None:
-            compare_definition_to_actual(prop_def, actual_value)
-        elif actual_value is not None:
+        if prop_type == 'object' and prop in actual:
+            compare_definition_to_actual(prop_def, actual[prop])
+        elif prop in actual:
             if prop_type == 'number':
                 prop_type = get_value(prop_def, 'format')
 
-            if not isinstance(actual_value, type_dict[prop_type]):
+            if actual[prop] is not None and not isinstance(actual[prop], type_dict[prop_type]):
                 raise AssertionError('%s: expected type %s but got %s instead' %
                                      (prop, prop_type, actual[prop].__class__))
             if prop_type == 'array':
@@ -39,17 +39,17 @@ def compare_definition_to_actual(definition, actual):
                 array_item_type = get_value(items, 'type')
                 if array_item_type == 'object':
                     try:
-                        for item in actual_value:
+                        for item in actual[prop]:
                             compare_definition_to_actual(items, item)
                     except TypeError:
                         raise AssertionError('actual[prop] for prop value of {} is None and can '
                                              'not be iterated over.'.format(prop))
                 else:
                     actual_item_type = type_dict[array_item_type]
-                    for item in actual_value:
+                    for item in actual[prop]:
                         if not isinstance(item, actual_item_type):
                             raise AssertionError('%s: expected type %s but got %s instead' %
-                                                 (prop, prop_type, actual_value.__cls__))
+                                                 (prop, prop_type, actual[prop].__cls__))
 
 
 def compare_actual_to_definition(definition, actual):
