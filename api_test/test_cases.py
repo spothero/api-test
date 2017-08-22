@@ -10,6 +10,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 from utils import compare_definition_to_actual
 from utils import compare_actual_to_definition
+from pprint import pformat
 
 
 User = get_user_model()
@@ -90,8 +91,29 @@ class GetTestCase(test.TransactionTestCase):
         msg = 'code: %s, content: %s' % (code, content)
         self.assertEqual(code, self.response['status_code'], msg)
         body = json.loads(content)
-        compare_definition_to_actual(self.response['schema'], body)
-        compare_actual_to_definition(self.response['schema'], body)
+
+        # Catch failures and log more information, then re-raise
+        try:
+            compare_definition_to_actual(self.response['schema'], body)
+        except AssertionError as e:
+            logger.debug('Failure comparing definition to actual:\n'
+                         'Documentation Schema (definition):\n'
+                         '{}\n'
+                         'Returned Response Body (actual):\n'
+                         '{}'
+                         .format(pformat(self.response['schema']), pformat(body)))
+            raise e
+
+        try:
+            compare_actual_to_definition(self.response['schema'], body)
+        except AssertionError as e:
+            logger.debug('Failure comparing actual to definition:\n'
+                         'Documentation Schema (definition):\n'
+                         '{}\n'
+                         'Returned Response Body (actual):\n'
+                         '{}'
+                         .format(pformat(self.response['schema']), pformat(body)))
+            raise e
 
     def build_formatted_param(self, param_format, test_value):
         # check if param is just explicitly defined
@@ -118,4 +140,3 @@ class GetTestCase(test.TransactionTestCase):
 
     def setUp(self):
         super(GetTestCase, self).setUp()
-

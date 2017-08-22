@@ -23,11 +23,10 @@ def compare_definition_to_actual(definition, actual):
             if prop not in actual:
                 raise AssertionError(error_msg)
 
-
         prop_type = get_value(prop_def, 'type')
-        if prop_type == 'object' and prop in actual:
+        if prop_type == 'object' and prop in actual and actual[prop] is not None:
             compare_definition_to_actual(prop_def, actual[prop])
-        elif prop in actual:
+        elif prop in actual and actual[prop] is not None:
             if prop_type == 'number':
                 prop_type = get_value(prop_def, 'format')
 
