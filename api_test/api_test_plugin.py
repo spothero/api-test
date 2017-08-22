@@ -58,7 +58,6 @@ class ApiTest(Plugin):
 
     def describeTest(self, test):
         actual_test = test.test
-        from test_cases import GetTestCase
         if isinstance(actual_test, GetTestCase):
             response_code = actual_test.response.get('status_code')
             return 'Testing path %s for response code %s' % (actual_test.path, response_code)
@@ -69,6 +68,7 @@ class ApiTest(Plugin):
         custom_test = test.test
         if isinstance(custom_test, Failure):
             return
+        print 'Testing: %s ' % custom_test.path
         data_loader = settings.API_TEST_DATA_LOADER
         if data_loader:
             module, _, func = data_loader.rpartition('.')
