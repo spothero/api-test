@@ -140,3 +140,6 @@ class GetTestCase(test.TransactionTestCase):
 
     def setUp(self):
         super(GetTestCase, self).setUp()
+
+    def shortDescription(self):
+        return 'Test GET for URL: %s' % self.url
