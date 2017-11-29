@@ -26,6 +26,8 @@ def generate_tests(spec_file, url_substring='', required_tags=None):
 
             if 'get' in values.keys():
                 get_specification = values['get']
+                if get_specification.get('x-test-skip'):
+                    continue
 
                 # tag condition: if the current tags match any of the required tags, then we should return it
                 tags = get_specification.get('tags', [])
